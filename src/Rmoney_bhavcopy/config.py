@@ -1,5 +1,5 @@
 conf = {
-    "hostname" : "localhost",
+    "hostname" : "192.168.50.104",
     "database" : "BhavCopies",
     "username" : "postgres",
     "pwd" : "Raghu@123",

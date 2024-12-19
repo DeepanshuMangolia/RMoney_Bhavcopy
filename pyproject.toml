@@ -1,6 +1,6 @@
 [project]
-name = "bhavcopy"
-version = "0.1.0"
+name = "Rmoney_bhavcopy"
+version = "0.1.2"
 description = "Add your description here"
 readme = "README.md"
 authors = [
