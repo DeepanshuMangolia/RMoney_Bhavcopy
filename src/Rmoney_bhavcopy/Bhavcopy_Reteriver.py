@@ -157,7 +157,7 @@ def parse_date(date_str):
     except Exception as e:
         raise ValueError(f"Invalid date format: {date_str}. Error: {e}")
 
-def get_CM_bhavcopy(startdate:Optional[datetime.date]=None, enddate:Optional[datetime.date]=None, symbols :Optional[List[str]]=None, series:Optional[List[str]]=None):
+def get_CM_bhavcopy(start_date:Optional[datetime.date]=datetime(2016,1,1), end_date:Optional[datetime.date]=datetime.now(), symbols :Optional[List[str]]=None, series:Optional[List[str]]=None):
     """
     Get the BhavCopy data for multiple symbols over a specified date range, ensuring consistent column mapping across different data sources.
         This function retrieves historical data from 2016-01-01 to yesterday's date
@@ -168,44 +168,70 @@ Parameters:
     series (str): The type of data series to retrieve (e.g., 'EQ', 'GB','GS','SG').
 
 Examples:
-    Example 1: Fetching Equity Data for Specific Stocks
-        start_date = '2023-01-01'
-        end_date = '2023-01-31'
+    Example 1: Fetching CM bha Data for Specific Stocks
+        start_date = datetime(2023,1,1)
+        end_date = datetime(2023,1,31)
         symbols = ['TCS', 'TECHM', 'HDFCBANK']
-        series = 'EQ'
-        bhavcopy_data = get_bhavcopy(start_date, end_date, symbols, series)
+        series = ['EQ']
+        bhavcopy_data = get_CM_bhavcopy(start_date=start_date, end_date=end_date, symbols=symbols, series=series)
 
     Example 2: Fetching Gold Bond Data for Multiple Symbols
-        start_date = '2023-02-01'
-        end_date = '2023-02-15'
+        start_date = datetime(2024,1,1)
+        end_date = datetime(2024,1,31)
         symbols = ['SGBSEP31II', 'SGBSEP27']
-        series = 'GB'
-        bhavcopy_data = get_bhavcopy(start_date, end_date, symbols, series)
+        series = ['GB']
+        bhavcopy_data = get_CM_bhavcopy(start_date=start_start_date, end_date=end_date, symbols=symbols, series=series)
 
     Example 3: Fetching Data for a Single Symbol
-        start_date = '2023-03-01'
-        end_date = '2023-03-10'
-        symbols = ['']
-        series = 'EQ'
-        bhavcopy_data = get_bhavcopy(start_date, end_date, symbols, series)
+        start_date = datetime(2024,1,1)
+        end_date = datetime(2024,1,31)
+        symbols = ['AGTL']
+        series = ['EQ']
+        bhavcopy_data = get_CM_bhavcopy(start_date=start_date, end_date=end_date, symbols=symbols, series=series)
 
     Example 4: Fetching Data Over a Longer Date Range
-        start_date = '2016-01-01'
-        end_date = '2023-04-30'
-        symbols = ['FB', 'NVDA', 'AMD']
+        start_date = datetime(2020,1,1)
+        end_date = datetime(2024,1,31)
+        symbols = ['ATGL', 'HDFCBAK', 'TCS']
         series = 'EQ'
-        bhavcopy_data = get_bhavcopy(start_date, end_date, symbols, series)
+        bhavcopy_data = get_CM_bhavcopy(start_date=start_date, end_date=end_date, symbols=symbols, series=series)
+
+    Example 5: Fetching CM Bhavcopy Data without marked the Starting Date (then the start_date = datetime(2016,1,1), By default)
+        end_date = datetime(2024,1,31)
+        symbols = ['TCS']
+        series = ['EQ']
+        bhavcopy_data = get_CM_bhavcopy(end_date=end_date, symbols=symbols, series=series)
+
+    Example 6: Fetching CM Bhavcopy Data without marked the ending date (then the end_date = datetime.now(), By Default (Current date of system))
+        start_date = datetime(2024,1,1)
+        symbols = ['TCS, 'TECHM']
+        series = ['EQ']
+        bhavcopy_data = get_CM_bhavcopy(start_date=start_date, symbols=symbols, series=series)
+
+    Example 7: Fetching CM Bhavcopy Data without marking both the start_date and and end_date (then the start_date = datetime(2016,1,1) and end_date = datetime.now(), By Default)
+        symbols = ['TCS, 'TECHM']
+        series = ['EQ']
+        bhavcopy_data = get_CM_bhavcopy(symbols=symbols, series=series)
+
 
     """
+
     conn = None
-    try:
-        # Parse dates to a standard format
-        start_date = parse_date(startdate)
-        end_date = parse_date(enddate)
+    if not isinstance(start_date, datetime):
+            raise ValueError(f"Expected datetime, but got {type(start_date).__name__}")
+        
+    if not isinstance(end_date, datetime):
+            raise ValueError(f"Expected datetime, but got {type(end_date).__name__}")
+    if start_date > end_date:
+        raise ValueError("startdate must be earlier than enddate.")
+        
         
         # Validate date range
-        start_date_obj = datetime.strptime(start_date, "%Y-%m-%d")
-        end_date_obj = datetime.strptime(end_date, "%Y-%m-%d")
+    try:
+        
+        # Validate date range
+        start_date_obj =  start_date.strftime("%Y-%m-%d")
+        end_date_obj = end_date.strftime("%Y-%m-%d")
         if start_date_obj > end_date_obj:
             raise ValueError("startdate must be earlier than enddate.")
 
@@ -256,48 +282,63 @@ Examples:
             conn.close()
             logger.info("Database connection closed.")
 
-def get_FO_bhavcopy(startdate:Optional[datetime.date]=datetime(2016,1,1), enddate:Optional[datetime.date]=datetime.now(), symbols :Optional[List[str]]=None):
+def get_FO_bhavcopy(start_date:Optional[datetime.date]=datetime(2016,1,1), end_date:Optional[datetime.date]=datetime.now(), symbols :Optional[List[str]]=None):
     """Get the BhavCopy data for multiple symbols over a specified date range, ensuring consistent column mapping across different data sources.
         This function retrieves historical data from 2016-01-01 to yesterday's date
 Parameters:
-    startdate (str): The starting date for the data retrieval in 'YYYY-MM-DD' format.
-    enddate (str): The ending date for the data retrieval in 'YYYY-MM-DD' format.
-    symbols (list): A list of financial symbols (e.g., FO tickers) for which data is to be fetched.
+    startdate (datetime): The starting date for the data retrieval in 'YYYY,MM,DD' format.
+    enddate (datetime): The ending date for the data retrieval in 'YYYY,MM,DD' format.
+    symbols (list): A list of financial symbols (e.g., BANKNIFTY tickers) for which data is to be fetched.
     
 
 Examples:
     Example 1: Fetching FO Data for Specific Stocks
-        start_date = '2023-01-01'
-        end_date = '2023-01-31'
+        start_date = datetime(2023,1,1)
+        end_date = datetime(2023,1,31)
         symbols = ['BANKNIFTY', 'DJIA', 'NIFTYINFRA']
-        bhavcopy_data = get_bhavcopy(start_date, end_date, symbols)
+        bhavcopy_data = get_FO_bhavcopy(start_date=start_date, end_date=end_date, symbols=symbols)
 
 
-    Example 3: Fetching Data for a Single Symbol
-        start_date = '2023-03-01'
-        end_date = '2023-03-10'
-        symbols = ['DJIA']
-        bhavcopy_data = get_bhavcopy(start_date, end_date, symbols)
+    Example 3: Fetching FO bhavcopy Data for a Single Symbol
+        start_date = datetime(2023,1,1)
+        end_date = datetime(2023,1,31)
+        symbols = ['BANKNIFTY']
+        bhavcopy_data = get_FO_bhavcopy(start_date=start_date, end_date=end_date, symbols=symbols)
 
-    Example 4: Fetching Data Over a Longer Date Range
-        start_date = '2016-01-01'
-        end_date = '2023-04-30'
+    Example 3: Fetching FO bhavcopy Data Over a Longer Date Range
+        start_date = datetime(2020,1,1)
+        end_date = datetime(2024,1,31)
         symbols = ['BANKNIFTY', 'DJIA', 'NIFTYINFRA']
-        bhavcopy_data = get_bhavcopy(start_date, end_date, symbols)
-"""
+        bhavcopy_data = get_FO_bhavcopy(start_date=start_date, end_date=end_date, symbols=symbols)
+
+    Example 4: Fetching FO bhavcopy Data without marked the Starting Date (then the start_date = datetime(2016,1,1), By default)
+        end_date = datetime(2017,1,31)
+        symbols = ['BANKNIFTY', 'DJIA', 'NIFTYINFRA']
+        bhavcopy_data = get_FO_bhavcopy(end_date=end_date, symbols=symbols)
+
+    Example 5: Fetching FO bhavcopy Data without marked the Ending Date (then the end_date = datetime.now(), By Default (Current date of system))
+        start_date = datetime(2023,1,1)
+        symbols = ['BANKNIFTY', 'DJIA', 'NIFTYINFRA']
+        bhavcopy_data = get_FO_bhavcopy(start_date=start_date, symbols=symbols)
+
+    Example 6: Fetching CM Bhavcopy Data without marking both the start_date and and end_date (then the start_date = datetime(2016,1,1) and end_date = datetime.now(), By Default)
+        symbols = ['BANKNIFTY', 'DJIA', 'NIFTYINFRA']
+        bhavcopy_data = get_FO_bhavcopy(symbols=symbols)
+
+""" 
     conn = None
     all_data = pd.DataFrame()  # Initialize an empty DataFrame for all symbols
 
     # Raise an error if startdate or enddate is not datetime
-    if not isinstance(startdate, datetime):
-            raise ValueError(f"Expected datetime, but got {type(startdate).__name__}")
+    if not isinstance(start_date, datetime):
+            raise ValueError(f"Expected datetime, but got {type(start_date).__name__}")
         
-    if not isinstance(enddate, datetime):
-            raise ValueError(f"Expected datetime, but got {type(enddate).__name__}")
+    if not isinstance(end_date, datetime):
+            raise ValueError(f"Expected datetime, but got {type(end_date).__name__}")
     
     
     try:
-        if startdate > enddate:
+        if start_date > end_date:
             raise ValueError("Startdate must be earlier than Enddate.")
         
         conn = establish_connection()
@@ -306,8 +347,8 @@ Examples:
             print(f"Fetching data for symbol: {symbol}")
             
             # Fetch data from both tables
-            cm_data = fetch_data_FO(conn, startdate, enddate, symbol, "FO_bhavCopies_CM")
-            udiff_data = fetch_data_FO(conn, startdate, enddate, symbol, "FO_Bhavcopies_UDiFF")
+            cm_data = fetch_data_FO(conn, start_date, end_date, symbol, "FO_bhavCopies_CM")
+            udiff_data = fetch_data_FO(conn, start_date, end_date, symbol, "FO_Bhavcopies_UDiFF")
 
             # Map columns for consistency
             cm_data_mapped = map_columns_FO(cm_data, COLUMN_MAPPING_FO, "FO_bhavCopies_CM")
@@ -332,8 +373,8 @@ def main():
     enddate_FO = datetime(2023,12,10)
     symbols_FO = ['BANKNIFTY', 'DJIA', 'NIFTYINFRA']
     
-    startdate_CM = "2023-01-01"  
-    enddate_CM = "2023-12-31"
+    startdate_CM = datetime(2023,12,1)  
+    enddate_CM = datetime(2023,12,10)
     symbols_CM = ["TCS","TECHM","HDFCBANK","20MICRONS"]
     series = ["EQ","BE"]  
 
@@ -342,7 +383,7 @@ def main():
     if not data_CM.empty:
         print("BhavCopy Data Retrieved:")
         print(data_CM)
-        # data.to_csv("v.csv")
+
         
     else:
         print("No data found for the specified criteria.")

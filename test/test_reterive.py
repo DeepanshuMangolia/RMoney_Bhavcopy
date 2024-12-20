@@ -2,43 +2,85 @@ from Rmoney_bhavcopy.Bhavcopy_Reteriver import get_CM_bhavcopy
 from Rmoney_bhavcopy.Bhavcopy_Reteriver import get_FO_bhavcopy
 import pytest
 from datetime import datetime
+import pandas as pd
 
-def test_bhavcopy ():
-    start_date = '2024-12-01'
-    end_date = '2024-12-05'
+# Test Case for CM Bhavcopy
+def test_CM_bhavcopy1():
+    start_date = datetime(2024,1,1)
+    end_date = datetime(2024,1,31)
     symbols = ['TCS']
     series = ['EQ']
-    data = get_CM_bhavcopy(start_date, end_date, symbols, series)
-    print(data)
+    data = get_CM_bhavcopy(start_date=start_date, end_date=end_date, symbols=symbols, series=series)
+    assert type(data) == pd.DataFrame
+    assert data.shape[0] > 10
+    assert data.shape[1] == 34
+    # print(data)
 
 
-def test_bhavcopy2 ():
-    start_date = ''
-    end_date = '2024-12-05'
+def test_CM_bhavcopy2():
+    
+    end_date = datetime(2016,1,31)
     symbols = ['TCS', 'HDFCBANK', 'SBIN']
     series = ['EQ','BE']
-    data2 = get_CM_bhavcopy(start_date, end_date, symbols, series)
-    print(data2)
+    data2 = get_CM_bhavcopy(end_date=end_date, symbols=symbols, series=series)
+    assert type(data2) == pd.DataFrame
+    assert data2.shape[0] > 60
+    assert data2.shape[1] == 34
+    # print(data2)
 
-def test_bhavcopy3():
-    end_date = 2024-12-5
+def test_CM_bhavcopy3():
+    start_date = datetime(2024,1,1)
     symbols = ['TCS', 'HDFCBANK']
     series = ['EQ']
-    data3 = get_CM_bhavcopy(end_date, symbols,series)
-    print(data3)
+    data3 = get_CM_bhavcopy(start_date=start_date, symbols=symbols,series=series)
+    assert type(data3) == pd.DataFrame  
+    assert data3.shape[0] > 500
+    assert data3.shape[1] == 34
+    # print(data3)
 
-def test_bhavcopy4 ():
-    start_date = ''
-    end_date = ''
-    symbols = ['']
-    series = ['']
-    data = get_CM_bhavcopy(start_date=start_date, end_date=end_date, symbols=symbols, series=series)
-    print(data)
+def test_CM_bhavcopy4():
+    symbols = ['TCS']
+    series = ['EQ']
+    data4 = get_CM_bhavcopy(symbols=symbols,series=series)
+    assert type(data4) == pd.DataFrame
+    assert data4.shape[0] > 800
+    assert data4.shape[1] == 34 
+    # print(data4)
 
-def test_bhavcopy5():
+
+# Test Case for FO Bhavcopy
+def test_FO_bhavcopy1():
     start_date = datetime(2023,12,1)
     end_date = datetime(2023,12,10)
     symbols = ['BANKNIFTY']
-    data = get_FO_bhavcopy(start_date,end_date,symbols)
-    print(data)
+    data5 = get_FO_bhavcopy(start_date,end_date,symbols)
+    assert type(data5) == pd.DataFrame
+    assert data5.shape[0] > 8000
+    assert data5.shape[1] == 34
+    # print(data5)
 
+def test_FO_bhavcopy2():
+    end_date = datetime(2016,5,31)
+    symbols = ['BANKNIFTY']
+    data6 = get_FO_bhavcopy(end_date=end_date,symbols=symbols)
+    assert type(data6) == pd.DataFrame
+    assert data6.shape[0] > 100
+    assert data6.shape[1] == 34
+    # print(data6)
+
+def test_FO_bhavcopy3():
+    start_date = datetime(2023,12,1)
+    symbols = ['BANKNIFTY','DJIA']
+    data7 = get_FO_bhavcopy(start_date=start_date,symbols=symbols)
+    assert type(data7) == pd.DataFrame
+    assert data7.shape[0] > 1000
+    assert data7.shape[1] == 34
+    # print(data7)
+
+def test_FO_bhavcopy4():
+    symbols = ['BANKNIFTY']
+    data8 = get_FO_bhavcopy(symbols=symbols)
+    assert type(data8) == pd.DataFrame
+    assert data8.shape[0] > 100
+    assert data8.shape[1] == 34
+    # print(data8)
