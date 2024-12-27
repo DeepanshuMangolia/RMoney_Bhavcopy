@@ -135,6 +135,32 @@ def fetch_data_FO(conn, startdate, enddate, symbol, table_name):
 
     return pd.DataFrame(result, columns=columns)
 
+def fetch_data_Indices(conn, startdate, enddate, symbol, table_name):
+    """Fetch data from the specified table based on provided parameters."""
+
+    cur = conn.cursor()
+
+    if table_name == "Indices_bhavCopies":
+        query = """
+            SELECT * FROM Indices_bhavCopies
+            WHERE "Index Date" >= %s AND "Index Date" <= %s
+            AND "Index Name" = %s
+
+"""
+
+        column = [
+            "Index Name", "Index Date", "Open Index Value", "High Index Value", "Low Index Value", 
+            "Closing Index Value", "Points Change", "Change(%)", "Volume", "Turnover (Rs. Cr.)", 
+            "P/E", "P/B", "Div Yield"
+        ]
+    else:
+        raise ValueError("Invalid table name provided.")
+    
+    cur.execute(query,(startdate,enddate,symbol))
+
+    result = cur.fetchall()
+
+    return pd.DataFrame(result, columns=column)
 
 def map_columns_CM(dataframe, mapping, source_table):
     """Map DataFrame columns to a unified format."""
@@ -228,7 +254,9 @@ Examples:
         
         # Validate date range
     try:
-        
+         # Convert symbols to upper case for consistency
+        if symbols:
+            symbols = [symbol.upper() for symbol in symbols]
         # Validate date range
         start_date_obj =  start_date.strftime("%Y-%m-%d")
         end_date_obj = end_date.strftime("%Y-%m-%d")
@@ -321,7 +349,7 @@ Examples:
         symbols = ['BANKNIFTY', 'DJIA', 'NIFTYINFRA']
         bhavcopy_data = get_FO_bhavcopy(start_date=start_date, symbols=symbols)
 
-    Example 6: Fetching CM Bhavcopy Data without marking both the start_date and and end_date (then the start_date = datetime(2016,1,1) and end_date = datetime.now(), By Default)
+    Example 6: Fetching FO Bhavcopy Data without marking both the start_date and and end_date (then the start_date = datetime(2016,1,1) and end_date = datetime.now(), By Default)
         symbols = ['BANKNIFTY', 'DJIA', 'NIFTYINFRA']
         bhavcopy_data = get_FO_bhavcopy(symbols=symbols)
 
@@ -336,7 +364,10 @@ Examples:
     if not isinstance(end_date, datetime):
             raise ValueError(f"Expected datetime, but got {type(end_date).__name__}")
     
-    
+     # Convert symbols to upper case for consistency
+    if symbols:
+        symbols = [symbol.upper() for symbol in symbols]
+
     try:
         if start_date > end_date:
             raise ValueError("Startdate must be earlier than Enddate.")
@@ -367,6 +398,88 @@ Examples:
 
     return all_data
 
+
+def get_indices_bhavcopy(start_date:Optional[datetime.date]=datetime(2016,1,1), end_date:Optional[datetime.date]=datetime.now(), symbols :Optional[List[str]]=None):
+    """Get the BhavCopy data for multiple symbols over a specified date range, ensuring consistent column mapping across different data sources.
+        This function retrieves historical data from 2016-01-01 to yesterday's date
+Parameters:
+    startdate (datetime): The starting date for the data retrieval in 'YYYY,MM,DD' format.
+    enddate (datetime): The ending date for the data retrieval in 'YYYY,MM,DD' format.
+    symbols (list): A list of financial symbols (e.g., NIFTY 50, Nifty500 Momentum 50 tickers) for which data is to be fetched.
+    
+
+Examples:
+    Example 1: Fetching Indices bhavcopy Data for Specific Stocks
+        start_date = datetime(2023,1,1)
+        end_date = datetime(2023,1,31)
+        symbols = ["NIFTY 50", "Nifty500 Momentum 50", "NIFTY 100"]
+        bhavcopy_data = get_indices_bhavcopy(start_date=start_date, end_date=end_date, symbols=symbols)
+
+
+    Example 3: Fetching Indices bhavcopy Data for a Single Symbol
+        start_date = datetime(2023,1,1)
+        end_date = datetime(2023,1,31)
+        symbols = ["NIFTY 50"]
+        bhavcopy_data = get_indices_bhavcopy(start_date=start_date, end_date=end_date, symbols=symbols)
+
+    Example 3: Fetching Indices bhavcopy Data Over a Longer Date Range
+        start_date = datetime(2020,1,1)
+        end_date = datetime(2024,1,31)
+        symbols = ["NIFTY 50", "Nifty500 Momentum 50", "NIFTY 100"]
+        bhavcopy_data = get_indices_bhavcopy(start_date=start_date, end_date=end_date, symbols=symbols)
+
+    Example 4: Fetching Indices bhavcopy Data without marked the Starting Date (then the start_date = datetime(2016,1,1), By default)
+        end_date = datetime(2017,1,31)
+        symbols = ["NIFTY 50", "Nifty500 Momentum 50", "NIFTY 100"]
+        bhavcopy_data = get_indices_bhavcopy(end_date=end_date, symbols=symbols)
+
+    Example 5: Fetching Indices bhavcopy Data without marked the Ending Date (then the end_date = datetime.now(), By Default (Current date of system))
+        start_date = datetime(2023,1,1)
+        symbols = ["NIFTY 50", "Nifty500 Momentum 50", "NIFTY 100"]
+        bhavcopy_data = get_FO_bhavcopy(start_date=start_date, symbols=symbols)
+
+    Example 6: Fetching Indices Bhavcopy Data without marking both the start_date and and end_date (then the start_date = datetime(2016,1,1) and end_date = datetime.now(), By Default)
+        symbols = ["NIFTY 50", "Nifty500 Momentum 50", "NIFTY 100"]
+        bhavcopy_data = get_indices_bhavcopy(symbols=symbols)
+
+""" 
+    conn = None
+    all_data = pd.DataFrame()  
+
+    # Raise an error if startdate or enddate is not datetime
+    if not isinstance(start_date, datetime):
+            raise ValueError(f"Expected datetime, but got {type(start_date).__name__}")
+        
+    if not isinstance(end_date, datetime):
+            raise ValueError(f"Expected datetime, but got {type(end_date).__name__}")
+    
+   
+
+    try:
+        if start_date > end_date:
+            raise ValueError("Startdate must be earlier than Enddate.")
+        
+        conn = establish_connection()
+
+        for symbol in symbols:
+            print(f"Fetching data for symbol: {symbol}")
+            
+            # Fetch data from both tables
+            indices_data = fetch_data_Indices(conn, start_date, end_date, symbol, "Indices_bhavCopies")
+            
+            # Append to the cumulative DataFrame
+            all_data = pd.concat([all_data, indices_data], ignore_index=True)
+
+    except Exception as e:
+        print(f"Error: {e}")
+    finally:
+        if conn:
+            conn.close()
+
+    return all_data
+
+
+
 def main():
     """Main function to run the script."""
     startdate_FO = datetime(2023,12,1)
@@ -377,6 +490,10 @@ def main():
     enddate_CM = datetime(2023,12,10)
     symbols_CM = ["TCS","TECHM","HDFCBANK","20MICRONS"]
     series = ["EQ","BE"]  
+
+    startdate_Indx = datetime(2023,12,1)
+    enddate_Indx = datetime(2023,12,10)
+    symbols_Indx = ["Nifty 50","Nifty 100", "Nifty 200"]
 
     # Fetch data
     data_CM = get_CM_bhavcopy(startdate_CM, enddate_CM, symbols_CM, series)
@@ -392,6 +509,13 @@ def main():
     if not data_FO.empty:
         print("FO BhavCopy Data Retrieved:")
         print(data_FO)
+    else:
+        print("No data found for the specified criteria.")
+
+    data_idx = get_indices_bhavcopy(start_date=startdate_Indx,end_date=enddate_Indx,symbols=symbols_Indx)
+    if not data_idx.empty:
+        print("Indices BhavCopy Data Retrieved:")
+        print(data_idx)
 
 if __name__ == "__main__":
     main()
