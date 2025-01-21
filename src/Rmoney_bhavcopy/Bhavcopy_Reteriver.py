@@ -194,28 +194,28 @@ Parameters:
     series (str): The type of data series to retrieve (e.g., 'EQ', 'GB','GS','SG').
 
 Examples:
-    Example 1: Fetching CM bha Data for Specific Stocks
+    Example 1: Fetching CM bhavcopy Data for Specific Stocks
         start_date = datetime(2023,1,1)
         end_date = datetime(2023,1,31)
         symbols = ['TCS', 'TECHM', 'HDFCBANK']
         series = ['EQ']
         bhavcopy_data = get_CM_bhavcopy(start_date=start_date, end_date=end_date, symbols=symbols, series=series)
 
-    Example 2: Fetching Gold Bond Data for Multiple Symbols
+    Example 2: Fetching Gold Bond bhavcopy Data for Multiple Symbols
         start_date = datetime(2024,1,1)
         end_date = datetime(2024,1,31)
         symbols = ['SGBSEP31II', 'SGBSEP27']
         series = ['GB']
         bhavcopy_data = get_CM_bhavcopy(start_date=start_start_date, end_date=end_date, symbols=symbols, series=series)
 
-    Example 3: Fetching Data for a Single Symbol
+    Example 3: Fetching bhavcopy Data for a Single Symbol
         start_date = datetime(2024,1,1)
         end_date = datetime(2024,1,31)
         symbols = ['AGTL']
         series = ['EQ']
         bhavcopy_data = get_CM_bhavcopy(start_date=start_date, end_date=end_date, symbols=symbols, series=series)
 
-    Example 4: Fetching Data Over a Longer Date Range
+    Example 4: Fetching bhavcopy Data Over a Longer Date Range
         start_date = datetime(2020,1,1)
         end_date = datetime(2024,1,31)
         symbols = ['ATGL', 'HDFCBAK', 'TCS']
@@ -320,7 +320,7 @@ Parameters:
     
 
 Examples:
-    Example 1: Fetching FO Data for Specific Stocks
+    Example 1: Fetching FO bhavcopy Data for Specific Stocks
         start_date = datetime(2023,1,1)
         end_date = datetime(2023,1,31)
         symbols = ['BANKNIFTY', 'DJIA', 'NIFTYINFRA']
@@ -414,7 +414,7 @@ Examples:
         end_date = datetime(2023,1,31)
         symbols = ["NIFTY 50", "Nifty500 Momentum 50", "NIFTY 100"]
         bhavcopy_data = get_indices_bhavcopy(start_date=start_date, end_date=end_date, symbols=symbols)
-
+    
 
     Example 3: Fetching Indices bhavcopy Data for a Single Symbol
         start_date = datetime(2023,1,1)
