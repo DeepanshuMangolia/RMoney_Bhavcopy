@@ -1,7 +1,7 @@
 conf = {
-    "hostname" : "192.168.50.104",
-    "database" : "BhavCopies",
+    "hostname" : "192.168.50.110",
+    "database" : "Bhavcopy",
     "username" : "postgres",
-    "pwd" : "Raghu@123",
+    "pwd" : "Quant@123",
     "port" : 5432
 }
