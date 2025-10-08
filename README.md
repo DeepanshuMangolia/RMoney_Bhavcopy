@@ -147,7 +147,7 @@ print(indices_data)
 ```
 
 ## Output
-![Output](./img/output.png)
+![Output](./RmoneyBhavcopy_Docs/site/img/output.png)
 
 ## Note
 `get_CM_bhavcopy(start_date, end_date, symbols, series)`
