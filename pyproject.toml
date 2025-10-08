@@ -1,6 +1,6 @@
 [project]
 name = "Rmoney_bhavcopy"
-version = "0.1.2"
+version = "0.1.3"
 description = "This Python Library is designed to fetch BhavCopy data (daily market reports) from a PostgreSQL database for specified symbols, date ranges, and series. The script provides utility functions to standardize data formats, parse dates, and retrieve data for Cash Market (CM), Futures and Options (FO), and Indices."
 readme = "README.md"
 authors = [
